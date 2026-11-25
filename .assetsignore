@@ -1,0 +1,12 @@
+node_modules/
+.wrangler/
+.git/
+src/
+migrations/
+package.json
+package-lock.json
+README.md
+wrangler.jsonc
+wrangler.jsonc.example
+.gitignore
+.assetsignore

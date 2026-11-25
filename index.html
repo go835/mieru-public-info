@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#123B5D" />
+  <meta name="description" content="都営バスの運行・車両位置と市民の現地情報を、文字で共有するアプリ" />
+  <title>みえる公共情報 | 市民参加型リアルタイム情報基盤</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="enhancements.css" />
+  <link rel="stylesheet" href="bus-map.css" />
+  <link rel="stylesheet" href="map-overrides.css" />
+  <link rel="stylesheet" href="features.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#" aria-label="みえる公共情報 ホーム">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span><strong>みえる公共情報</strong><small>CIVIC LIVE DATA</small></span>
+      </a>
+      <button class="header-post" type="button" data-open-post>情報を投稿</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <p class="eyebrow">CITIZEN-POWERED PUBLIC DATA</p>
+        <h1 id="hero-title">バスのいまと、<br />現地の気づきを見える化。</h1>
+        <p class="hero-copy">都営バスの車両位置と、利用者が得た運行情報を文字で共有。音声情報にアクセスしにくいときにも、状況を確かめられます。</p>
+      </div>
+      <button class="hero-post" type="button" data-open-post><span aria-hidden="true">＋</span> 現地の情報を投稿</button>
+    </section>
+
+    <section class="notice" aria-label="情報の見方">
+      <span class="notice-icon" aria-hidden="true">i</span>
+      <p><strong>情報の見方：</strong>市民からの情報は公式発表ではありません。現地観測・投稿時刻・信頼度を確認し、重要な判断は公式情報でも確かめてください。<br /><span class="local-only-note">このデモでの投稿・確認は、このブラウザ内だけに保存されます。</span></p>
+    </section>
+
+    <section class="bus-map-section" aria-labelledby="bus-map-title">
+      <div class="section-heading"><div><p class="eyebrow">TOEI BUS VEHICLE POSITIONS</p><h2 id="bus-map-title">走行中の都営バス</h2></div><p id="vehicle-status" class="feed-count" aria-live="polite">車両位置を読み込み中…</p></div>
+      <div class="map-layout">
+        <div class="bus-map" id="bus-map" aria-label="都営バスの車両位置マップ。車両を選ぶと詳細を表示します。"></div>
+        <aside id="bus-detail" class="bus-detail" aria-live="polite"><span class="bus-icon" aria-hidden="true">🚌</span><h3>車両を選択</h3><p>地図上の点を選ぶと、路線と最終更新時刻を確認できます。</p></aside>
+      </div>
+      <p class="map-note">表示される位置は、提供されたGTFS-Realtimeデータのスナップショットです。60秒ごとに再読込します。</p>
+    </section>
+
+    <section class="favorites-section" aria-labelledby="favorites-title">
+      <div><p class="eyebrow">MY BUS ALERTS</p><h2 id="favorites-title">よく使う路線・停留所</h2><p>登録した路線・停留所に関する遅延投稿を、アプリを開いている間に通知します。</p></div>
+      <div class="favorites-controls"><form id="favorite-form"><label for="favorite-input">路線または停留所名</label><div><input id="favorite-input" maxlength="50" placeholder="例：都01、錦糸町駅" required /><button type="submit">登録</button></div></form><button id="notification-button" class="notification-button" type="button">遅延通知を有効にする</button></div>
+      <ul id="favorites-list" class="favorites-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="content-area" aria-labelledby="feed-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">LIVE UPDATES</p><h2 id="feed-title">現在の情報</h2></div>
+        <div class="heading-actions"><p id="feed-count" class="feed-count" aria-live="polite"></p><button id="export-data" class="export" type="button">JSONデータを出力</button></div>
+      </div>
+
+      <div class="filters" aria-label="情報を絞り込む">
+        <button class="filter active" data-filter="all" type="button">すべて</button>
+        <button class="filter" data-filter="official" type="button">公式情報</button>
+        <button class="filter" data-filter="user" type="button">市民からの情報</button>
+      </div>
+
+      <div id="feed" class="feed" aria-live="polite"></div>
+      <p id="hidden-notice" class="hidden-notice" hidden></p>
+      <div id="empty-state" class="empty-state" hidden>
+        <span aria-hidden="true">◎</span><h3>該当する情報はありません</h3><p>現地で得た情報があれば、共有にご協力ください。</p>
+      </div>
+    </section>
+
+    <section class="how-it-works" aria-labelledby="how-title">
+      <p class="eyebrow">HOW IT WORKS</p>
+      <h2 id="how-title">聞こえた人が、見える情報に変える</h2>
+      <div class="steps">
+        <article><span>1</span><h3>現地で気づく</h3><p>アナウンスや駅の状況を確認。</p></article>
+        <article><span>2</span><h3>かんたん投稿</h3><p>場所・カテゴリ・内容を数タップで共有。</p></article>
+        <article><span>3</span><h3>観測を重ねる</h3><p>現地の一致・不一致と有用性を分けて記録します。</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer><p>みえる公共情報 <span>·</span> 音声情報にアクセスしにくいすべての人へ</p></footer>
+
+  <dialog id="post-dialog" aria-labelledby="post-title">
+    <form id="post-form" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">SHARE AN UPDATE</p><h2 id="post-title">現地の情報を投稿</h2></div><button class="close" type="button" data-close-post aria-label="閉じる">×</button></div>
+      <p class="dialog-intro">車内・停留所で聞こえた内容や、目で確認した状況を文字で共有してください。正確な位置情報は公開せず、停留所・エリア単位で扱います。</p>
+      <div class="form-grid">
+        <label>路線・停留所・エリア <span class="required">必須</span><input id="location" name="location" required maxlength="50" placeholder="例：都営バス・新宿駅西口付近" /></label>
+        <label>情報カテゴリ <span class="required">必須</span><select id="category" name="category" required><option value="suspension">🚌 運休・運行見合わせ</option><option value="delay">🕐 遅延</option><option value="resume">🔄 運行再開</option><option value="incident">⚠️ 事故・トラブル</option><option value="disaster">🌪️ 災害</option><option value="evacuation">🚨 避難・誘導</option><option value="other">ℹ️ その他</option></select></label>
+      </div>
+      <label>内容 <span class="required">必須</span><textarea id="message" name="message" required maxlength="280" rows="4" placeholder="例：道路混雑のため、到着が約10分遅れると車内で案内がありました。"></textarea><small><span id="char-count">0</span>/280</small></label>
+      <label class="check"><input id="verified" type="checkbox" required /> <span>私はこの情報を現地で確認しました</span></label>
+      <p class="form-note">投稿は「市民からの情報」として表示されます。公式発表と誤解される表現、個人を特定できる内容、正確な位置情報は投稿しないでください。</p>
+      <div class="dialog-actions"><button type="button" class="secondary" data-close-post>キャンセル</button><button class="submit" type="submit">情報を共有する</button></div>
+    </form>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
